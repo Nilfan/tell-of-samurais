@@ -2,6 +2,8 @@ import { cloneDeep } from "lodash";
 import { Socket } from "socket.io";
 import { getUuid } from "../helpers/getUuid";
 import { PresentCard } from "../models/presentCard.model";
+import { PlayerAction } from "../helpers/playerActions";
+import { ServerEvent } from "../helpers/events";
 
 export class Player {
     secretCard: PresentCard;
@@ -9,9 +11,27 @@ export class Player {
     id = getUuid();
 
     private socket: Socket;
+    private actionsAvailability: Record<PlayerAction, boolean>;
 
-    constructor(hand: PresentCard[]) {
+    updateHand(hand: PresentCard[]) {
         this.hand = cloneDeep(hand);
+        this.socket.emit(ServerEvent.UpdateHand, this.hand);
+    }
+
+    resetActions() {
+        this.actionsAvailability = Object.values(Player)
+            .filter((val) => +val !== val)
+            .reduce((acc, action) => {
+                acc[action] = true;
+                return acc;
+            }, {});
+    }
+
+    emitAvailableActions() {
+        const availableActions = Object.entries(this.actionsAvailability)
+            .filter(([_, availability]) => availability)
+            .map(([action]) => action);
+        this.socket.emit(ServerEvent.UpdatePlayerActions, availableActions);
     }
 
     setSocket(socket: Socket): void {

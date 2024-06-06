@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { PresentCard } from '../../../models';
-	import { playerService } from '@lib/player-service';
 	import { socketService } from '@lib/socket-service';
 	import { goto } from '$app/navigation';
+	import { playerManager } from '@lib/player-service';
 
 	let hand: PresentCard[] | null = [];
 
@@ -14,7 +14,7 @@
 			}
 		});
 
-		playerService.hand.subscribe((res) => {
+		playerManager.hand.subscribe((res) => {
 			hand = res;
 		});
 	});

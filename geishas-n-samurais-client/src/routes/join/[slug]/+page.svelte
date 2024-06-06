@@ -5,11 +5,7 @@
 	import { page } from '$app/stores';
 
 	onMount(() => {
-		socketService.allPlayersReadyEmitter.subscribe((isReady) => {
-			if (isReady) {
-				goto(`/game/${$page.params.slug}`);
-			}
-		});
+		socketService.subscribeOnGameStart().then(() => goto(`/game/${$page.params.slug}`));
 
 		socketService.joinGame($page.params.slug);
 	});

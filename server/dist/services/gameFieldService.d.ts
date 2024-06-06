@@ -7,4 +7,5 @@ export declare class GameField {
     player1: Player;
     player2: Player;
     constructor();
+    startNewRound(): void;
 }

@@ -4,6 +4,7 @@ import { Server, Socket } from "socket.io";
 import { getUuid } from "./helpers/getUuid";
 import { GameField } from "./services/GameFieldService";
 import { attachPlayer } from "./attachPlayer";
+import { ClientEvent } from "./helpers/events";
 
 const app: Express = express();
 
@@ -21,7 +22,7 @@ const io = new Server(httpServer, {
 const roomGameMap = new Map();
 
 io.on("connection", (socket: Socket) => {
-    socket.on("createRoom", () => {
+    socket.on(ClientEvent.CreateRoom, () => {
         const roomId = getUuid();
         (socket as any).playerName = "player_1";
 
@@ -31,7 +32,7 @@ io.on("connection", (socket: Socket) => {
         attachPlayer(socket, gameField, roomId, gameField.player1);
     });
 
-    socket.on("joinGame", (roomId: string) => {
+    socket.on(ClientEvent.JoinGame, (roomId: string) => {
         (socket as any).playerName = "player_2";
         console.log("roomId :>> ", roomId);
 
@@ -43,10 +44,6 @@ io.on("connection", (socket: Socket) => {
         }
 
         attachPlayer(socket, gameField, roomId, gameField.player2);
-
-        socket.on("isInited", () => {
-            io.to(roomId).emit("openGameField");
-        });
     });
 });
 

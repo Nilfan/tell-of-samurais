@@ -4,13 +4,13 @@
 	import { goto } from '$app/navigation';
 
 	function onCreateRoom() {
-		socketService.createRoom();
-
-		try {
-			goto(`waiting`);
-		} catch (error) {
-			console.log('error :>>', error);
-		}
+		socketService.createRoom().then(() => {
+			try {
+				goto(`waiting`);
+			} catch (error) {
+				console.log('error :>>', error);
+			}
+		});
 	}
 </script>
 
@@ -21,9 +21,8 @@
 <style>
 	.page-holder {
 		width: 100%;
-		height: 100%;
 		display: flex;
 		justify-content: center;
-		padding-top: 30%;
+		padding-top: 40vh;
 	}
 </style>

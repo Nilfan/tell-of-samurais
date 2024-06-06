@@ -9,6 +9,7 @@ const socket_io_1 = require("socket.io");
 const getUuid_1 = require("./helpers/getUuid");
 const GameFieldService_1 = require("./services/GameFieldService");
 const attachPlayer_1 = require("./attachPlayer");
+const events_1 = require("./helpers/events");
 const app = (0, express_1.default)();
 const httpServer = (0, http_1.createServer)(app);
 const io = new socket_io_1.Server(httpServer, {
@@ -21,14 +22,14 @@ const io = new socket_io_1.Server(httpServer, {
 });
 const roomGameMap = new Map();
 io.on("connection", (socket) => {
-    socket.on("createRoom", () => {
+    socket.on(events_1.ClientEvent.CreateRoom, () => {
         const roomId = (0, getUuid_1.getUuid)();
         socket.playerName = "player_1";
         const gameField = new GameFieldService_1.GameField();
         roomGameMap.set(roomId, gameField);
         (0, attachPlayer_1.attachPlayer)(socket, gameField, roomId, gameField.player1);
     });
-    socket.on("joinGame", (roomId) => {
+    socket.on(events_1.ClientEvent.JoinGame, (roomId) => {
         socket.playerName = "player_2";
         console.log("roomId :>> ", roomId);
         const gameField = roomGameMap.get(roomId);
@@ -37,9 +38,6 @@ io.on("connection", (socket) => {
             return;
         }
         (0, attachPlayer_1.attachPlayer)(socket, gameField, roomId, gameField.player2);
-        socket.on("isInited", () => {
-            io.to(roomId).emit("openGameField");
-        });
     });
 });
 console.log("Server listening");

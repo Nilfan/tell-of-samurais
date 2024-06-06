@@ -10,10 +10,12 @@ export class GameField {
     deck: PresentCard[];
     outOfGameCard: PresentCard;
 
-    player1: Player;
-    player2: Player;
+    player1: Player = new Player();
+    player2: Player = new Player();
 
-    constructor() {
+    constructor() {}
+
+    startNewRound(): void {
         const deck = presentsService.generateCardDeck();
 
         this.initialDeck = cloneDeep(deck);
@@ -21,12 +23,10 @@ export class GameField {
         const hand1 = deck.splice(0, INITIAL_HAND_CAPACITY);
         const hand2 = deck.splice(1, INITIAL_HAND_CAPACITY);
 
-        this.player1 = new Player(hand1);
-        this.player2 = new Player(hand2);
+        this.player1.updateHand(hand1);
+        this.player2.updateHand(hand2);
 
-        // console.log("initialDeck :>> ", this.initialDeck);
-        // console.log("outOfGameCard :>> ", this.outOfGameCard);
-        // console.log("hand1 :>> ", hand1);
-        // console.log("hand2 :>> ", hand2);
+        this.player1.resetActions();
+        this.player2.resetActions();
     }
 }

@@ -5,7 +5,10 @@ export declare class Player {
     hand: PresentCard[];
     id: string;
     private socket;
-    constructor(hand: PresentCard[]);
+    private actionsAvailability;
+    updateHand(hand: PresentCard[]): void;
+    resetActions(): void;
+    emitAvailableActions(): void;
     setSocket(socket: Socket): void;
     socketEmit(event: string, value?: any): void;
     isInited(): boolean;
