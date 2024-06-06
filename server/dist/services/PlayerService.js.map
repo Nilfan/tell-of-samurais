@@ -1,0 +1,10 @@
+{
+    "version": 3,
+    "file": "Player.js",
+    "sourceRoot": "",
+    "sources": [
+        "../../src/services/Player.ts"
+    ],
+    "names": [],
+    "mappings": ";;;AAAA,mCAAmC;AAGnC,MAAa,aAAa;IAItB,YAAY,IAAmB;QAC3B,IAAI,GAAG,IAAA,kBAAS,EAAC,IAAI,CAAC,CAAC;IAC3B,CAAC;CACJ;AAPD,sCAOC"
+}
