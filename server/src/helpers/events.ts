@@ -1,17 +1,37 @@
 export enum ServerEvent {
-    Connect = "connect",
-    UpdateHand = "updateHand",
+    // entry data
     InitPlayer = "initPlayer",
-    StartGame = "startGame",
-    UpdatePlayerActions = "updatePlayerActions",
 
+    // system
+    Connect = "connect",
+
+    StartGame = "startGame",
+
+    // regular player update
+    UpdateHand = "updateHand",
+    UpdateTable = "updateTable",
+    UpdatePlayerActions = "updatePlayerActions",
+    ChangePlayerTurn = "changePlayerTurn",
+
+    // exceptions
     WrongAction = "wrongAction",
+
+    // choose request answering
+    AskPlayerToChooseOneCard = "askPlayerToChooseOneCard",
+    AskPlayerToChooseCounpleCards = "askPlayerToChooseCounpleCards",
 }
 
 export enum ClientEvent {
+    // entry
     CreateRoom = "createRoom",
     JoinGame = "joinGame",
+
+    // system
     ChatTest = "chatTest",
     Disconnect = "disconnect",
+
+    // actions
     PlayerMove = "playerMove",
+    ChooseOneCard = "chooseOneCard",
+    ChooseCoupleCards = "chooseCoupleCards",
 }

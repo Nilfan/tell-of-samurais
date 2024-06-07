@@ -11,7 +11,6 @@ export function attachPlayer(
     roomId: string,
     player: Player,
 ): void {
-    player.setSocket(socket);
     socket.join(roomId);
 
     subscribePlayer(socket, player, gameField);
@@ -23,7 +22,7 @@ export function attachPlayer(
 
     console.log("attach " + (socket as any).playerName);
 
-    if (gameField.player1.isInited() && gameField.player2.isInited()) {
+    if (gameField.player1.isInited && gameField.player2.isInited) {
         console.log("openGameField event");
         gameField.player1.socketEmit(ServerEvent.StartGame);
         gameField.player2.socketEmit(ServerEvent.StartGame);

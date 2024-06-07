@@ -3,41 +3,45 @@ import { Socket } from "socket.io";
 import { getUuid } from "../helpers/getUuid";
 import { PresentCard } from "../models/presentCard.model";
 import { PlayerAction } from "../helpers/playerActions";
-import { ServerEvent } from "../helpers/events";
+import { ClientEvent, ServerEvent } from "../helpers/events";
 import { PresentType } from "src/models/presents.model";
+import { TableManager } from "./managers/TableManager";
+import { HandManager } from "./managers/HandManager";
+import { AvailableActionsManager } from "./managers/AvailableActionsManager";
 
 export class Player {
     secretCard: PresentCard = null;
     blokedPresentTypes: PresentType[] = [];
-    hand: PresentCard[];
     id = getUuid();
-    table: PresentCard[] = [];
+
+    tableManager: TableManager;
+    handManager: HandManager;
+    actionsManager: AvailableActionsManager;
 
     private socket: Socket;
-    private actionsAvailability: Record<PlayerAction, boolean>;
 
-    updateHand(hand: PresentCard[]) {
-        this.hand = cloneDeep(hand);
-        this.socket.emit(ServerEvent.UpdateHand, this.hand);
+    get isInited(): boolean {
+        return !!this.socket;
     }
 
-    resetActions() {
-        this.actionsAvailability = Object.values(Player)
-            .filter((val) => +val !== val)
-            .reduce((acc, action) => {
-                acc[action] = true;
-                return acc;
-            }, {});
+    constructor(socket: Socket) {
+        this.tableManager = new TableManager(socket);
+        this.handManager = new HandManager(socket);
+        this.actionsManager = new AvailableActionsManager(socket);
     }
 
-    isActionAvailable(action: PlayerAction): boolean {
-        return this.actionsAvailability[action];
+    stopMoving(): void {
+        this.socket.emit(ServerEvent.ChangePlayerTurn, false);
+    }
+
+    startMoving(): void {
+        this.socket.emit(ServerEvent.ChangePlayerTurn, true);
     }
 
     holdSecretCard(card: PresentCard): void {
         this.secretCard = card;
 
-        this.deleteCardsFromHand([card]);
+        this.handManager.deleteCardsFromHand([card]);
     }
 
     holdBlockCardTypes(cards: PresentCard[]): void {
@@ -45,18 +49,7 @@ export class Player {
         cards.forEach(({ type }) => cardTypesSet.add(type));
         this.blokedPresentTypes = Array.from(cardTypesSet);
 
-        this.deleteCardsFromHand(cards);
-    }
-
-    emitAvailableActions() {
-        const availableActions = Object.entries(this.actionsAvailability)
-            .filter(([_, availability]) => availability)
-            .map(([action]) => action);
-        this.socket.emit(ServerEvent.UpdatePlayerActions, availableActions);
-    }
-
-    setSocket(socket: Socket): void {
-        this.socket = socket;
+        this.handManager.deleteCardsFromHand(cards);
     }
 
     socketEmit(event: string, value?: any): void {
@@ -68,13 +61,9 @@ export class Player {
         }
     }
 
-    isInited(): boolean {
-        return !!this.socket;
-    }
-
-    private deleteCardsFromHand(cards: PresentCard[]): void {
-        const idsToDelete = cards.map((card) => card.id);
-        const hand = this.hand.filter((item) => !idsToDelete.includes(item.id));
-        this.updateHand(hand);
+    subscribeOnEvent<T>(event: ClientEvent): Promise<T> {
+        return new Promise((res) => {
+            this.socket.once(event, (response) => res(response));
+        });
     }
 }

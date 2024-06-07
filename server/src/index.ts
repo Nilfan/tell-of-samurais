@@ -27,6 +27,8 @@ io.on("connection", (socket: Socket) => {
         (socket as any).playerName = "player_1";
 
         const gameField = new GameField();
+
+        gameField.addFirstPlayer(socket);
         roomGameMap.set(roomId, gameField);
 
         attachPlayer(socket, gameField, roomId, gameField.player1);
@@ -42,6 +44,8 @@ io.on("connection", (socket: Socket) => {
             socket.disconnect();
             return;
         }
+
+        gameField.addSecondPlayer(socket);
 
         attachPlayer(socket, gameField, roomId, gameField.player2);
     });
