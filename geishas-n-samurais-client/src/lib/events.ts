@@ -10,5 +10,7 @@ export enum ServerEvent {
 export enum ClientEvent {
 	CreateRoom = 'createRoom',
 	JoinGame = 'joinGame',
+	ChatTest = 'chatTest',
+	Disconnect = 'disconnect',
 	PlayerMove = 'playerMove'
 }

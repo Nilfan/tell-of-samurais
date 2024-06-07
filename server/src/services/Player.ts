@@ -4,11 +4,14 @@ import { getUuid } from "../helpers/getUuid";
 import { PresentCard } from "../models/presentCard.model";
 import { PlayerAction } from "../helpers/playerActions";
 import { ServerEvent } from "../helpers/events";
+import { PresentType } from "src/models/presents.model";
 
 export class Player {
-    secretCard: PresentCard;
+    secretCard: PresentCard = null;
+    blokedPresentTypes: PresentType[] = [];
     hand: PresentCard[];
     id = getUuid();
+    table: PresentCard[] = [];
 
     private socket: Socket;
     private actionsAvailability: Record<PlayerAction, boolean>;
@@ -25,6 +28,24 @@ export class Player {
                 acc[action] = true;
                 return acc;
             }, {});
+    }
+
+    isActionAvailable(action: PlayerAction): boolean {
+        return this.actionsAvailability[action];
+    }
+
+    holdSecretCard(card: PresentCard): void {
+        this.secretCard = card;
+
+        this.deleteCardsFromHand([card]);
+    }
+
+    holdBlockCardTypes(cards: PresentCard[]): void {
+        const cardTypesSet = new Set<PresentType>();
+        cards.forEach(({ type }) => cardTypesSet.add(type));
+        this.blokedPresentTypes = Array.from(cardTypesSet);
+
+        this.deleteCardsFromHand(cards);
     }
 
     emitAvailableActions() {
@@ -49,5 +70,11 @@ export class Player {
 
     isInited(): boolean {
         return !!this.socket;
+    }
+
+    private deleteCardsFromHand(cards: PresentCard[]): void {
+        const idsToDelete = cards.map((card) => card.id);
+        const hand = this.hand.filter((item) => !idsToDelete.includes(item.id));
+        this.updateHand(hand);
     }
 }
