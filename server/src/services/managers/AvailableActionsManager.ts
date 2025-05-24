@@ -1,7 +1,6 @@
 import { Socket } from "socket.io";
-import { ServerEvent } from "src/helpers/events";
-import { PlayerAction } from "src/helpers/playerActions";
-import { Player } from "../Player";
+import { ServerEvent } from "../../helpers/events";
+import { PlayerAction } from "../../helpers/playerActions";
 
 export class AvailableActionsManager {
     private socket: Socket;
@@ -17,12 +16,17 @@ export class AvailableActionsManager {
     }
 
     resetActions() {
-        this.actionsAvailability = Object.values(Player)
-            .filter((val) => +val !== val)
-            .reduce((acc, action) => {
+        this.actionsAvailability = Object.values(PlayerAction).reduce(
+            (acc, action) => {
                 acc[action] = true;
                 return acc;
-            }, {});
+            },
+            {} as Record<PlayerAction, boolean>,
+        );
+
+        console.log("this.actionsAvailability :>> ", this.actionsAvailability);
+
+        this.emitAvailableActions();
     }
 
     emitAvailableActions() {

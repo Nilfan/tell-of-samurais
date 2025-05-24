@@ -6,11 +6,14 @@ export enum ServerEvent {
     Connect = "connect",
 
     StartGame = "startGame",
+    GameEnd = "gameEnd",
 
     // regular player update
     UpdateHand = "updateHand",
     UpdateTable = "updateTable",
+    UpdateOppositeTable = "updateOppositeTable",
     UpdatePlayerActions = "updatePlayerActions",
+    UpdateCharacterStates = "updateCharacterStates",
     ChangePlayerTurn = "changePlayerTurn",
 
     // exceptions
@@ -18,7 +21,8 @@ export enum ServerEvent {
 
     // choose request answering
     AskPlayerToChooseOneCard = "askPlayerToChooseOneCard",
-    AskPlayerToChooseCounpleCards = "askPlayerToChooseCounpleCards",
+    AskPlayerToChooseCoupleCards = "askPlayerToChooseCoupleCards",
+    AskPlayerToChooseDoubleCards = "askPlayerToChooseDoubleCards",
 }
 
 export enum ClientEvent {

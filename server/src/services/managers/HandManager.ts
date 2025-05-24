@@ -1,7 +1,7 @@
 import { cloneDeep } from "lodash";
 import { Socket } from "socket.io";
-import { ServerEvent } from "src/helpers/events";
-import { PresentCard } from "src/models/presentCard.model";
+import { ServerEvent } from "../../helpers/events";
+import { PresentCard } from "../../models/presentCard.model";
 
 export class HandManager {
     private socket: Socket;

@@ -25,6 +25,7 @@ export class Player {
     }
 
     constructor(socket: Socket) {
+        this.socket = socket;
         this.tableManager = new TableManager(socket);
         this.handManager = new HandManager(socket);
         this.actionsManager = new AvailableActionsManager(socket);
