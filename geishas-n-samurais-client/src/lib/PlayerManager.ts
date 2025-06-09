@@ -6,7 +6,8 @@ import { socketService } from './socket-service';
 import type { Socket } from 'socket.io-client';
 import { ServerEvent } from './events';
 
-export class PlayerManager {	hand: Writable<PresentCard[]> = writable([]);
+export class PlayerManager {
+	hand: Writable<PresentCard[]> = writable([]);
 	table: Writable<PresentCard[]> = writable([]);
 	oppositeTable: Writable<PresentCard[]> = writable([]);
 	availableActions: Writable<PlayerAction[]> = writable([]);
@@ -19,22 +20,25 @@ export class PlayerManager {	hand: Writable<PresentCard[]> = writable([]);
 		this.socket = socket;
 		this.initSubs();
 	}
+
 	initSubs() {
 		this.socket.on(ServerEvent.UpdateHand, (response: PresentCard[]) => {
-			this.hand.set(response);
+			const sortedResponse = this.sortCards(response || []);
+			this.hand.set(sortedResponse);
 		});
 
 		this.socket.on(ServerEvent.UpdatePlayerActions, (response: PlayerAction[]) => {
-			console.log('UpdatePlayerActions :>>', response);
-			this.availableActions.set(response);
+			this.availableActions.set(response || []);
 		});
 
 		this.socket.on(ServerEvent.UpdateTable, (response: PresentCard[]) => {
-			this.table.set(response);
+			const sortedResponse = this.sortCards(response || []);
+			this.table.set(sortedResponse);
 		});
 
 		this.socket.on(ServerEvent.UpdateOppositeTable, (response: PresentCard[]) => {
-			this.oppositeTable.set(response);
+			const sortedResponse = this.sortCards(response || []);
+			this.oppositeTable.set(sortedResponse);
 		});
 
 		this.socket.on(ServerEvent.UpdateCharacterStates, (response: Character[]) => {
@@ -45,10 +49,13 @@ export class PlayerManager {	hand: Writable<PresentCard[]> = writable([]);
 			this.playerTurn.set(response);
 		});
 
-		this.socket.on(ServerEvent.GameEnd, (response: { winner: string, player1Score: number, player2Score: number }) => {
-			console.log('Game ended', response);
-			// Handle game end through state management or navigation
-		});
+		this.socket.on(
+			ServerEvent.GameEnd,
+			(response: { winner: string; player1Score: number; player2Score: number }) => {
+				console.log('Game ended', response);
+				// Handle game end through state management or navigation
+			}
+		);
 	}
 
 	reset() {
@@ -59,5 +66,9 @@ export class PlayerManager {	hand: Writable<PresentCard[]> = writable([]);
 	}
 	makePlayerMove(action: PlayerAction, cards: PresentCard[]): void {
 		socketService.emitPlayerMove(action, cards);
+	}
+
+	private sortCards(cards: PresentCard[]): PresentCard[] {
+		return [...cards].sort((a, b) => (a.type.toString() > b.type.toString() ? 1 : -1));
 	}
 }

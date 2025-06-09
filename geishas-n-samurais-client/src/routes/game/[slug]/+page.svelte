@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { PresentCard, PresentType } from '../../../models';
+	import type { PresentCard } from '../../../models';
 	import { socketService } from '@lib/socket-service';
 	import { goto } from '$app/navigation';
 	import Button from '@components/Button.svelte';
 	import { PlayerAction, playerActionsCollection } from '@lib/playerAction';
 	import { charactersCardColor, charactersCardColorDict } from './constants';
+	import { gameManager } from '@lib/GameManager';
 
-	const playerManager = socketService.playerManager;
 	const actionsCollection = playerActionsCollection;
 
 	onMount(() => {
@@ -17,26 +17,12 @@
 			}
 		});
 
-		if (playerManager) {
-			playerManager.hand.subscribe((res) => {
-				hand = res || [];
-				hand.sort((a, b) => (a.type.toString() > b.type.toString() ? 1 : -1));
-			});
-
-			playerManager.table.subscribe((res) => {
-				table = res || [];
-				table.sort((a, b) => (a.type.toString() > b.type.toString() ? 1 : -1));
-			});
-
-			playerManager.oppositeTable.subscribe((res) => {
-				oppositeTable = res || [];
-				oppositeTable.sort((a, b) => (a.type.toString() > b.type.toString() ? 1 : -1));
-			});
-
-			playerManager.availableActions.subscribe((res) => {
-				availableActions = res || [];
-			});
-		}
+		gameManager.subscribeOnPlayerProps({
+			handCallback: (res) => (hand = res || []),
+			tableCallback: (res) => (table = res || []),
+			oppositeTableCallback: (res) => (oppositeTable = res || []),
+			availableActionsCallback: (res) => (availableActions = res || [])
+		});
 	});
 
 	function emitAction(action: PlayerAction): void {
@@ -84,6 +70,7 @@
 
 <div class="game-field-container">
 	<div class="present-cards-container">
+		<span> Opposite Player Table </span>
 		{#each oppositeTable as card}
 			<div class="present-card" style={`background-color: ${charactersCardColorDict[card.type]}`}>
 				{card.type}
@@ -94,6 +81,7 @@
 	<br />
 
 	<div class="characters-cards-container">
+		<span> Characters </span>
 		{#each charactersCardColor as character}
 			<div class="character-card" style={`background-color: ${character.color}`}>
 				{character.type}
@@ -104,6 +92,7 @@
 	<br />
 
 	<div class="present-cards-container">
+		<span> Player Table </span>
 		{#each table as card}
 			<div class="present-card" style={`background-color: ${charactersCardColorDict[card.type]}`}>
 				{card.type}
@@ -114,6 +103,8 @@
 	<br />
 
 	<div class="present-cards-container">
+		<span> Cards in Hand </span>
+
 		{#each handView as card}
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
 			<!-- svelte-ignore missing-declaration -->
@@ -129,6 +120,7 @@
 	</div>
 
 	<div class="available-actions-container">
+		<span> Available Actions </span>
 		{#each actionsCollection as action}
 			<Button
 				title={action}
@@ -139,6 +131,7 @@
 	</div>
 
 	<div class="present-cards-container">
+		<span> Cards in Choose </span>
 		{#each cardsInChoose as card}
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
 			<!-- svelte-ignore missing-declaration -->

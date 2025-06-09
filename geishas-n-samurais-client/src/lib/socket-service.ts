@@ -1,9 +1,9 @@
 import { io, Socket } from 'socket.io-client';
 import { writable, type Writable } from 'svelte/store';
 import { ServerEvent, ClientEvent } from './events';
-import { PlayerManager } from './PlayerManager';
 import type { PlayerAction } from './playerAction';
 import type { PresentCard } from '../models';
+import { gameManager } from './GameManager';
 
 const serverAddress = 'http://localhost:3030';
 
@@ -12,8 +12,6 @@ class SocketService {
 
 	roomId: Writable<string | null> = writable(null);
 	playerId: Writable<string | null> = writable(null);
-
-	playerManager: PlayerManager | undefined;
 
 	constructor() {
 		this.socket = io(serverAddress, { transports: ['websocket'] });
@@ -24,7 +22,7 @@ class SocketService {
 	reset(): void {
 		this.roomId.set(null);
 		this.playerId.set(null);
-		this.playerManager = undefined;
+		gameManager.resePlayer();
 	}
 
 	emitPlayerMove(action: PlayerAction, cards: PresentCard[]): void {
@@ -33,7 +31,7 @@ class SocketService {
 
 	createRoom(): Promise<void> {
 		const promise = this.subscribeOnPlayerInit();
-		this.playerManager = new PlayerManager(this.socket);
+		gameManager.initNewPlayer(this.socket);
 
 		this.socket.emit(ClientEvent.CreateRoom);
 		return promise;
@@ -41,7 +39,7 @@ class SocketService {
 
 	joinGame(roomId: string): Promise<void> {
 		const promise = this.subscribeOnPlayerInit();
-		this.playerManager = new PlayerManager(this.socket);
+		gameManager.initNewPlayer(this.socket);
 
 		this.socket.emit(ClientEvent.JoinGame, roomId);
 		return promise;

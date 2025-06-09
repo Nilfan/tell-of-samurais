@@ -45,6 +45,9 @@ export class GameField {
         const hand1 = deck.splice(0, INITIAL_HAND_CAPACITY);
         const hand2 = deck.splice(1, INITIAL_HAND_CAPACITY);
 
+        console.log("hand1", hand1);
+        console.log("hand2", hand2);
+
         this.player1.handManager.updateHand(hand1);
         this.player2.handManager.updateHand(hand2);
 
