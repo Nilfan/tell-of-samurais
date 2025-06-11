@@ -1,0 +1,29 @@
+{
+    "name": "tell-of-samurais",
+    "version": "1.0.0",
+    "private": true,
+    "workspaces": [
+        "geishas-n-samurais-client",
+        "geishas-n-samurais-server"
+    ],
+    "scripts": {
+        "dev": "npm run dev:client & npm run dev:server",
+        "dev:client": "npm run dev --workspace=geishas-n-samurais-client",
+        "dev:server": "npm run dev --workspace=geishas-n-samurais-server",
+        "build:client": "npm run build --workspace=geishas-n-samurais-client",
+        "build:server": "npm run build --workspace=geishas-n-samurais-server",
+        "build": "npm run build:client && npm run build:server",
+        "start:client": "npm run start --workspace=geishas-n-samurais-client",
+        "start:server": "npm run start --workspace=geishas-n-samurais-server",
+        "start": "npm run start:client & npm run start:server",
+        "test": "npm run test:client && npm run test:server",
+        "test:client": "npm run test --workspace=geishas-n-samurais-client",
+        "test:server": "npm run test --workspace=geishas-n-samurais-server",
+        "test:watch": "npm run test:watch:client & npm run test:watch:server",
+        "test:watch:client": "npm run test:watch --workspace=geishas-n-samurais-client",
+        "test:watch:server": "npm run test:watch --workspace=geishas-n-samurais-server",
+        "test:coverage": "npm run test:coverage:client && npm run test:coverage:server",
+        "test:coverage:client": "npm run test:coverage --workspace=geishas-n-samurais-client",
+        "test:coverage:server": "npm run test:coverage --workspace=geishas-n-samurais-server"
+    }
+}
