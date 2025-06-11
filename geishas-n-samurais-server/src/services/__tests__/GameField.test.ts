@@ -25,7 +25,7 @@ describe("GameField", () => {
     it("should add first player", () => {
         gameField.addFirstPlayer(mockSocket as Socket);
         expect(gameField.player1).toBeDefined();
-        expect(gameField.player1?.socket).toBe(mockSocket);
+        expect(gameField.player1?.id).toBe(mockSocket.id);
     });
 
     it("should add second player", () => {
@@ -33,7 +33,7 @@ describe("GameField", () => {
         const secondSocket = { ...mockSocket, id: "second-socket-id" };
         gameField.addSecondPlayer(secondSocket as Socket);
         expect(gameField.player2).toBeDefined();
-        expect(gameField.player2?.socket).toBe(secondSocket);
+        expect(gameField.player2?.id).toBe(secondSocket.id);
     });
 
     it("should not allow more than two players", () => {

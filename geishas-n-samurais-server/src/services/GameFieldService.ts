@@ -24,11 +24,14 @@ export class GameField {
     constructor() {}
 
     addFirstPlayer(socket: Socket) {
-        this.player1 = new Player(socket);
+        this.player1 = new Player(socket, socket.id);
     }
 
     addSecondPlayer(socket: Socket) {
-        this.player2 = new Player(socket);
+        if (this.player1 && this.player2) {
+            throw new Error("Cannot add more than two players");
+        }
+        this.player2 = new Player(socket, socket.id);
     }
 
     startNewRound(): void {

@@ -12,7 +12,7 @@ import { AvailableActionsManager } from "./managers/AvailableActionsManager";
 export class Player {
     secretCard: PresentCard = null;
     blokedPresentTypes: PresentType[] = [];
-    id = getUuid();
+    id: string;
 
     tableManager: TableManager;
     handManager: HandManager;
@@ -24,8 +24,9 @@ export class Player {
         return !!this.socket;
     }
 
-    constructor(socket: Socket) {
+    constructor(socket: Socket, id?: string) {
         this.socket = socket;
+        this.id = id || getUuid();
         this.tableManager = new TableManager(socket);
         this.handManager = new HandManager(socket);
         this.actionsManager = new AvailableActionsManager(socket);
