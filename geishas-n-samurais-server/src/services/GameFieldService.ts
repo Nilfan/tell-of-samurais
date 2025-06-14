@@ -43,13 +43,47 @@ export class GameField {
         });
 
         const deck = presentsService.generateCardDeck();
+
+        // Validate deck size
+        const expectedDeckSize = 21; // 3×2 + 2×3 + 1×4 + 1×5 = 21 cards
+        if (deck.length !== expectedDeckSize) {
+            console.error(
+                `Invalid deck size: ${deck.length}. Expected: ${expectedDeckSize}`,
+            );
+            throw new Error("Invalid deck size");
+        }
+
         this.initialDeck = cloneDeep(deck);
+        const deckArray: PresentCard[] = [...deck];
 
-        const hand1 = deck.splice(0, INITIAL_HAND_CAPACITY);
-        const hand2 = deck.splice(1, INITIAL_HAND_CAPACITY);
+        // Deal 10 cards to each player
+        const hand1 = deckArray.splice(0, INITIAL_HAND_CAPACITY);
+        const hand2 = deckArray.splice(0, INITIAL_HAND_CAPACITY);
 
-        console.log("hand1", hand1);
-        console.log("hand2", hand2);
+        // Validate hands
+        if (
+            hand1.length !== INITIAL_HAND_CAPACITY ||
+            hand2.length !== INITIAL_HAND_CAPACITY
+        ) {
+            console.error(
+                `Invalid hand sizes: Player1: ${hand1.length}, Player2: ${hand2.length}`,
+            );
+            throw new Error("Invalid hand sizes");
+        }
+
+        // Validate remaining deck
+        if (deckArray.length !== 1) {
+            console.error(
+                `Invalid remaining deck size: ${deckArray.length}. Expected: 1`,
+            );
+            throw new Error("Invalid remaining deck size");
+        }
+
+        console.log("Deck validation passed:");
+        console.log("- Total cards:", this.initialDeck.length);
+        console.log("- Player 1 hand:", hand1.length, "cards");
+        console.log("- Player 2 hand:", hand2.length, "cards");
+        console.log("- Remaining deck:", deckArray.length, "cards");
 
         this.player1.handManager.updateHand(hand1);
         this.player2.handManager.updateHand(hand2);
@@ -201,7 +235,7 @@ export class GameField {
 
         // Update cards played for each character
         Object.entries(cardsByType).forEach(([type, count]) => {
-            const character = this.characters.find((c) => c.type === type);
+            const character = this.characters.find((c) => c.id === type);
             if (character) {
                 const playerKey =
                     playerId === this.player1.id ? "player1" : "player2";
@@ -229,7 +263,7 @@ export class GameField {
 
     private blockCharacters(characterTypes: string[]): void {
         characterTypes.forEach((type) => {
-            const character = this.characters.find((c) => c.type === type);
+            const character = this.characters.find((c) => c.id === type);
             if (character) {
                 character.isBlocked = true;
             }

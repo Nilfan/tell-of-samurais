@@ -7,6 +7,7 @@ export enum ServerEvent {
 
     StartGame = "startGame",
     GameEnd = "gameEnd",
+    GameError = "gameError",
 
     // regular player update
     UpdateHand = "updateHand",

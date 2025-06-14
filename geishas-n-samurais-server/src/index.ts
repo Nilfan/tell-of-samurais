@@ -5,6 +5,7 @@ import { getUuid } from "./helpers/getUuid";
 import { GameField } from "./services/GameFieldService";
 import { attachPlayer } from "./attachPlayer";
 import { ClientEvent } from "./helpers/events";
+import { ServerEvent } from "./helpers/events";
 
 const app: Express = express();
 
@@ -46,8 +47,25 @@ io.on("connection", (socket: Socket) => {
         }
 
         gameField.addSecondPlayer(socket);
-
         attachPlayer(socket, gameField, roomId, gameField.player2);
+
+        // Initialize game after both players have joined
+        try {
+            gameField.setOppositeTablesUpdaters();
+            gameField.startNewRound();
+            console.log("Game started successfully");
+        } catch (error) {
+            console.error("Failed to start game:", error);
+            // Notify both players about the error
+            gameField.player1.socketEmit(
+                ServerEvent.GameError,
+                "Failed to start game",
+            );
+            gameField.player2.socketEmit(
+                ServerEvent.GameError,
+                "Failed to start game",
+            );
+        }
     });
 });
 

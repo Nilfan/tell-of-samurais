@@ -55,12 +55,7 @@ export class Player {
     }
 
     socketEmit(event: string, value?: any): void {
-        try {
-            this.socket.emit(event, JSON.stringify(value));
-        } catch (error) {
-            console.log("socketEmit error", error);
-            this.socket.emit(event, value);
-        }
+        this.socket.emit(event, value);
     }
 
     subscribeOnEvent<T>(event: ClientEvent): Promise<T> {

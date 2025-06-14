@@ -1,39 +1,43 @@
+import type { PresentCard } from '../models';
+import type { Character } from '../models/character.model';
+import { PlayerAction } from './playerAction';
 import type { Socket } from 'socket.io-client';
 import { PlayerManager } from './PlayerManager';
-import type { PresentCard } from '../models';
-import type { PlayerAction } from './playerAction';
 
 export class GameManager {
-	playerManager: PlayerManager | undefined;
+	private playerManager: PlayerManager;
 
-	initNewPlayer(socket: Socket): void {
+	constructor(socket: Socket) {
 		this.playerManager = new PlayerManager(socket);
 	}
 
-	resePlayer(): void {
-		this.playerManager = undefined;
+	subscribeOnPlayerProps(
+		handCallback: (hand: PresentCard[]) => void,
+		tableCallback: (table: PresentCard[]) => void,
+		oppositeTableCallback: (oppositeTable: PresentCard[]) => void,
+		availableActionsCallback: (availableActions: PlayerAction[]) => void,
+		playerTurnCallback: (playerTurn: boolean) => void,
+		charactersCallback: (characters: Character[]) => void,
+		currentTurnCallback: (currentTurn: string | null) => void,
+		gameStatusCallback: (status: 'waiting' | 'playing' | 'ended') => void,
+		winnerCallback: (winner: string | null) => void
+	) {
+		this.playerManager.hand.subscribe(handCallback);
+		this.playerManager.table.subscribe(tableCallback);
+		this.playerManager.oppositeTable.subscribe(oppositeTableCallback);
+		this.playerManager.availableActions.subscribe(availableActionsCallback);
+		this.playerManager.playerTurn.subscribe(playerTurnCallback);
+		this.playerManager.characters.subscribe(charactersCallback);
+		this.playerManager.currentTurn.subscribe(currentTurnCallback);
+		this.playerManager.gameStatus.subscribe(gameStatusCallback);
+		this.playerManager.winner.subscribe(winnerCallback);
 	}
 
-	subscribeOnPlayerProps({
-		handCallback,
-		tableCallback,
-		oppositeTableCallback,
-		availableActionsCallback
-	}: {
-		handCallback: (cards: PresentCard[]) => void;
-		tableCallback: (cards: PresentCard[]) => void;
-		oppositeTableCallback: (cards: PresentCard[]) => void;
-		availableActionsCallback: (actions: PlayerAction[]) => void;
-	}): void {
-		if (this.playerManager) {
-			this.playerManager.hand.subscribe(handCallback);
-			this.playerManager.table.subscribe(tableCallback);
-			this.playerManager.oppositeTable.subscribe(oppositeTableCallback);
-			this.playerManager.availableActions.subscribe(availableActionsCallback);
-		} else {
-			throw new Error('PlayerManager is not initialized. Please call initNewPlayer first.');
-		}
+	makePlayerMove(action: PlayerAction, cards: PresentCard[]): void {
+		this.playerManager.makePlayerMove(action, cards);
+	}
+
+	reset(): void {
+		this.playerManager.reset();
 	}
 }
-
-export const gameManager = new GameManager();

@@ -30,9 +30,11 @@
         "typescript": "^5.4.5"
     },
     "dependencies": {
+        "@types/uuid": "^10.0.0",
         "express": "^4.19.2",
         "lodash": "^4.17.21",
         "socket.io": "^4.7.5",
+        "uuid": "^11.1.0",
         "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.4.0"
     }
 }

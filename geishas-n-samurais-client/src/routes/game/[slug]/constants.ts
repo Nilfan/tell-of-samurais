@@ -10,9 +10,24 @@ export const charactersCardColorDict: Record<PresentType, string> = {
 	type5_0: '#921de0'
 };
 
-export const charactersCardColor: { type: PresentType; color: string }[] = Object.keys(
-	charactersCardColorDict
-).map((type) => ({
+export const characterInfo: Record<PresentType, { name: string; value: number }> = {
+	type2_0: { name: 'Samurai', value: 2 },
+	type2_1: { name: 'Ninja', value: 2 },
+	type2_2: { name: 'Ronin', value: 2 },
+	type3_0: { name: 'Shogun', value: 3 },
+	type3_1: { name: 'Daimyo', value: 3 },
+	type4_0: { name: 'Emperor', value: 4 },
+	type5_0: { name: 'Dragon', value: 5 }
+};
+
+export const charactersCardColor: {
+	type: PresentType;
+	color: string;
+	name: string;
+	value: number;
+}[] = Object.keys(charactersCardColorDict).map((type) => ({
 	type: type as PresentType,
-	color: charactersCardColorDict[type as PresentType]
+	color: charactersCardColorDict[type as PresentType],
+	name: characterInfo[type as PresentType].name,
+	value: characterInfo[type as PresentType].value
 }));
